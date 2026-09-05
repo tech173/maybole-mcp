@@ -1,5 +1,7 @@
 # Maybole MCP
 
+[![maybole-mcp MCP server](https://glama.ai/mcp/servers/tech173/maybole-mcp/badges/score.svg)](https://glama.ai/mcp/servers/tech173/maybole-mcp)
+
 **Find a verified work email and draft the cold email — from inside your AI assistant.**
 
 Maybole is an MCP server. Add it to Claude, ChatGPT, Cursor, Cline, or VS Code and
