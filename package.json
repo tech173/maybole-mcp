@@ -1,0 +1,40 @@
+{
+  "name": "maybole-mcp",
+  "version": "0.1.0",
+  "description": "Find verified work emails and draft cold outreach from your AI assistant. Strong coverage of finance (IB, PE, hedge funds). 5 free contacts.",
+  "type": "module",
+  "bin": {
+    "maybole-mcp": "bin/cli.mjs"
+  },
+  "files": [
+    "bin",
+    "server.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "mcp",
+    "modelcontextprotocol",
+    "model-context-protocol",
+    "email-finder",
+    "work-email",
+    "cold-email",
+    "cold-outreach",
+    "recruiting",
+    "sales",
+    "prospecting",
+    "claude",
+    "cursor",
+    "chatgpt"
+  ],
+  "homepage": "https://www.maybole.ai/mcp",
+  "bugs": "https://github.com/maybole/maybole-mcp/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maybole/maybole-mcp.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "io.maybole/maybole",
+  "description": "Find verified work emails and draft cold outreach from your AI assistant. Strong coverage of finance (IB, PE, hedge funds). 5 free contacts.",
+  "status": "active",
+  "repository": {
+    "url": "https://github.com/maybole/maybole-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "websiteUrl": "https://www.maybole.ai/mcp",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://www.maybole.ai/api/mcp",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer <your Maybole API key>. Get one free at https://www.maybole.ai/mcp",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "maybole-mcp",
+      "version": "0.1.0",
+      "transport": { "type": "stdio" },
+      "environmentVariables": [
+        {
+          "name": "MAYBOLE_API_KEY",
+          "description": "Your Maybole API key (mby_ + 40 hex). Get one free at https://www.maybole.ai/mcp",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
