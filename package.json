@@ -28,10 +28,10 @@
     "chatgpt"
   ],
   "homepage": "https://www.maybole.ai/mcp",
-  "bugs": "https://github.com/maybole/maybole-mcp/issues",
+  "bugs": "https://github.com/tech173/maybole-mcp/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/maybole/maybole-mcp.git"
+    "url": "git+https://github.com/tech173/maybole-mcp.git"
   },
   "license": "MIT",
   "engines": {

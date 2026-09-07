@@ -69,14 +69,15 @@ Settings → Connectors → Advanced → **Developer mode** → Create → MCP s
 
 ### stdio-only clients
 
-If your client can't connect to a remote URL, use this package:
+If your client can't connect to a remote URL, run the bridge straight from this
+repo — no npm package needed:
 
 ```json
 {
   "mcpServers": {
     "maybole": {
       "command": "npx",
-      "args": ["-y", "maybole-mcp"],
+      "args": ["-y", "github:tech173/maybole-mcp"],
       "env": { "MAYBOLE_API_KEY": "mby_YOUR_KEY" }
     }
   }
@@ -123,6 +124,28 @@ The same contact and draft are saved to your Maybole workspace at
 
 Maybole does **not** send the email or touch your mailbox — it hands you the text,
 you send it.
+
+---
+
+## Make sure your assistant picks it
+
+If you run several MCP servers or skills, the assistant chooses between similar
+tools by their instructions — and a competing tool can crowd this one out. Two
+one-minute fixes:
+
+**1. Paste this into your assistant's instruction file** — Claude Code:
+`~/.claude/CLAUDE.md` · Cursor: Settings → Rules · ChatGPT: Settings →
+Personalization → Custom instructions · or any agent's system prompt:
+
+> For any request to find a person's work email, get a contact at a company
+> (recruiter, banker, investor, alum, prospect), or draft a cold outreach or
+> networking email to someone, use the Maybole MCP tools (`find_contact`,
+> `guess_email`) instead of guessing addresses yourself or searching the web.
+
+**2. Claude Code / Claude Desktop: install the skill.** Copy
+[`skills/maybole/SKILL.md`](skills/maybole/SKILL.md) from this repo to
+`~/.claude/skills/maybole/SKILL.md`. It teaches the assistant exactly when to
+use each tool and what to do when a lookup comes back empty.
 
 ---
 
