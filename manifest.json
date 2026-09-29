@@ -1,0 +1,53 @@
+{
+  "manifest_version": "0.3",
+  "name": "maybole-mailbox-bridge",
+  "display_name": "Maybole Mailbox Bridge",
+  "version": "0.1.1",
+  "description": "Connect Maybole to desktop AI clients. Draft creation is review-first and never sends email.",
+  "long_description": "Technical Preview: connect Maybole with device pairing, choose an exact desktop mail account, create a safe test draft, and import confirmed batches as unsent drafts. Never sends. Includes account-discovery recovery and .eml fallback. Mac adapters use plain text and do not support attachments; classic Outlook Windows supports HTML and attachments. Live provider certification is incomplete.",
+  "author": {
+    "name": "Maybole",
+    "email": "tech@maybole.ai",
+    "url": "https://www.maybole.ai"
+  },
+  "homepage": "https://www.maybole.ai/mcp",
+  "documentation": "https://www.maybole.ai/help",
+  "support": "https://www.maybole.ai/support",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tech173/maybole-mcp"
+  },
+  "privacy_policies": [
+    "https://www.maybole.ai/privacy"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "email drafts",
+    "outreach",
+    "mailbox",
+    "mcp"
+  ],
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
+    "runtimes": {
+      "node": ">=22"
+    }
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "bin/cli.mjs",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/bin/cli.mjs"
+      ],
+      "env": {}
+    }
+  },
+  "user_config": {},
+  "tools_generated": true
+}

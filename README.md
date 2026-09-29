@@ -1,185 +1,82 @@
-# Maybole MCP
+# Maybole MCP and Mailbox
 
-[![maybole-mcp MCP server](https://glama.ai/mcp/servers/tech173/maybole-mcp/badges/score.svg)](https://glama.ai/mcp/servers/tech173/maybole-mcp)
+Find work contacts, prepare outreach, and move generated emails into an exact mailbox as **unsent drafts**. Maybole never sends email.
 
-**Find a verified work email and draft the cold email — from inside your AI assistant.**
+[Setup and current downloads](https://www.maybole.ai/mcp) · [Source](https://github.com/tech173/maybole-mcp) · [Agent skill](https://github.com/tech173/maybole-mcp/blob/main/skills/maybole/SKILL.md)
 
-Maybole is an MCP server. Add it to Claude, ChatGPT, Cursor, Cline, or VS Code and
-your assistant gains two tools:
+## Hosted tools
 
-| Tool | What it does | Cost |
-|---|---|---|
-| `guess_email` | `name` + `company` → best-guess work email, from a 1,409-firm pattern catalogue. Unverified. | Free, unlimited |
-| `find_contact` | A **verified** email, the person's background (education, career, why they're worth contacting), and a **personalized cold email drafted in your voice** — returned right in the chat and saved to your Maybole workspace. | **5 free**, then a paid plan |
+Connect to `https://www.maybole.ai/api/mcp` with a Maybole API key in the `Authorization: Bearer …` header. Use the client-specific setup on the website; support for custom authentication and local extensions varies by client.
 
-Coverage is strongest for **finance** — investment banking, private equity, hedge
-funds — built on 16,000+ verified contacts. It works for any company.
+| Tool | Purpose |
+|---|---|
+| `guess_email` | Calculate a possible address from an employer's format. Unverified; no contact credit. |
+| `find_contact` | Look up a person and prepare outreach, saved to your workspace. Uses the account's shared credit balance and lookup limits. |
+| `add_to_skip_list` | Exclude people you do not want offered again. |
+| `get_my_drafts` | Retrieve generated drafts waiting for mailbox transfer. |
+| `mark_drafts_in_mailbox` | Legacy acknowledgement, only after a draft actually exists. |
+| `start_mailbox_delivery` | Start a bounded transfer with stable delivery keys and attachment links. |
+| `complete_mailbox_delivery` | Report created, failed, or cancelled results; failed items remain retryable. |
 
-→ **Get a free key: https://www.maybole.ai/mcp**
+The hosted server cannot directly control your computer's mail application. A local bridge or another explicitly authorized mailbox integration is needed. A browser-only AI client does not gain desktop access by connecting to the hosted URL.
 
----
+## Mailbox Technical Preview
 
-## Quick start
+Download the Mac app or desktop extension from the [setup page](https://www.maybole.ai/mcp). The Mac build is unsigned and not notarized. Follow the download page's macOS approval instructions only for a download obtained from Maybole, and compare its adjacent SHA-256 file. Do not disable Gatekeeper or system-wide security protections.
 
-You need a free API key (`mby_…`). Create one at
-[maybole.ai/mcp](https://www.maybole.ai/mcp) — it's tied to a free Maybole
-account and comes with 5 free contacts.
+The Mac app has a Dock icon and a menu-bar control: **Open Maybole Mailbox**, **Restart local connection**, and **Quit Maybole Mailbox**. Closing the browser tab does not quit the app. Quit stops its owned local helper and releases its port. The review screen is served only on a dynamically assigned `127.0.0.1` port.
 
-### Claude Desktop / Cursor / Cline
+1. Open the app and select Connect. Approve the one-time pairing code while signed in to Maybole. The credential is stored in the operating-system credential store.
+2. Choose the exact account and adapter. Create a clearly labelled test draft, then check it in that account.
+3. Review and select the waiting drafts. Create only the selected items. Nothing is sent.
+4. Review the per-item result. Retry failed items only after confirming which drafts already exist.
 
-Add to your MCP config (`claude_desktop_config.json`, `~/.cursor/mcp.json`, …):
+Account detection reports permission denial, no account, missing app, unsupported interface, and timeout separately. For denied macOS automation, open **System Settings → Privacy & Security → Automation**, find the controlling app named in the prompt, and enable the intended mail app. Return and select **Retry account detection**, then create a fresh test draft. See [Apple's automation guidance](https://support.apple.com/guide/mac-help/mchl108e1718/mac).
 
-```json
-{
-  "mcpServers": {
-    "maybole": {
-      "type": "http",
-      "url": "https://www.maybole.ai/api/mcp",
-      "headers": { "Authorization": "Bearer mby_YOUR_KEY" }
-    }
-  }
-}
+An offline connection can be retried without discarding the saved pairing. If the app was stopped, reopen it. If its helper stops, use Restart local connection.
+
+See [Mac verification status](https://github.com/tech173/maybole-mcp/blob/main/MAC_QA.md) for automated results and the native checks still pending.
+
+### Compatibility and limits
+
+| Adapter | Technical Preview behavior |
+|---|---|
+| Apple Mail on macOS | Exact account/alias, plain-text unsent drafts; enabled signature text retained. Rich styling is downgraded explicitly. Attachments are not supported by this adapter. |
+| Outlook on macOS | Requires a compatible scriptable Exchange account. Plain-text drafts; attachments unsupported. New Outlook behavior is not certified. |
+| Classic Outlook on Windows | Exact account via COM; HTML and attachments supported by the adapter. Live account certification remains pending. |
+| Browser-only mail / New Outlook | No general local adapter guarantee. Use the website's manual mailbox options or `.eml` export. |
+
+An attachment that cannot be transferred fails that item rather than silently dropping the attachment. Follow-up threading and every provider/version combination are not certified. A crash after a mail app creates a draft but before acknowledgement can require checking that mailbox before retrying. The preview must not be described as universally duplicate-proof.
+
+## Local source setup
+
+There is no published npm release under `maybole-mcp` at the time of this update. Do not use `npx maybole-mcp` or an npm mailbox command.
+
+With Node 22 or later, from this package directory:
+
+```bash
+npm ci
+node prototypes/local-helper/server.mjs
 ```
 
-### Claude (web, claude.ai)
+For a stdio-capable AI client, configure `node` with the absolute path to `bin/cli.mjs`. This bridge uses the MCP SDK directly, obtains credentials by device pairing when needed, and exposes the hosted tools plus:
 
-Settings → Connectors → Add custom connector → URL
-`https://www.maybole.ai/api/mcp` → paste your key when prompted.
+`list_mail_accounts`, `create_test_draft`, `create_mailbox_drafts`, `verify_draft`, `export_eml`, `revoke_pairing`.
 
-### ChatGPT
+Do not put a real key in command arguments, screenshots, or shared config. If configuring a hosted connection manually, use the client's supported secret-storage mechanism.
 
-Settings → Connectors → Advanced → **Developer mode** → Create → MCP server URL
-`https://www.maybole.ai/api/mcp`, header `Authorization: Bearer mby_YOUR_KEY`.
+For contributors on macOS:
 
-### VS Code (Copilot agent mode)
-
-`.vscode/mcp.json`:
-
-```json
-{
-  "servers": {
-    "maybole": {
-      "type": "http",
-      "url": "https://www.maybole.ai/api/mcp",
-      "headers": { "Authorization": "Bearer mby_YOUR_KEY" }
-    }
-  }
-}
+```bash
+npm test
+npm run app:mac:unsigned
+npm run mcpb:pack
 ```
 
-### stdio-only clients
+The native wrapper uses Swift/AppKit; building it requires Apple's command-line developer tools. Release files and checksums are generated under `dist/`. In the Maybole application repository, the package lives at `packages/maybole-mcp` and build scripts also copy downloads into `public/downloads`.
 
-If your client can't connect to a remote URL, run the bridge straight from this
-repo — no npm package needed:
+## Privacy and support
 
-```json
-{
-  "mcpServers": {
-    "maybole": {
-      "command": "npx",
-      "args": ["-y", "github:tech173/maybole-mcp"],
-      "env": { "MAYBOLE_API_KEY": "mby_YOUR_KEY" }
-    }
-  }
-}
-```
+The bridge enumerates account identities, not mailbox contents. It creates only the drafts requested by the user. See [THREAT_MODEL.md](./THREAT_MODEL.md), [Maybole privacy](https://www.maybole.ai/privacy), and [support issues](https://github.com/tech173/maybole-mcp/issues). Account questions: `tech@maybole.ai`.
 
-It runs [`mcp-remote`](https://www.npmjs.com/package/mcp-remote) under the hood to
-bridge stdio ↔ the hosted server.
-
----
-
-## Using it
-
-Just ask your assistant, in plain language:
-
-> *"Find me an email for a healthcare M&A managing director at Evercore, and draft
-> a note introducing myself — I'm a second-year analyst at a boutique, Penn
-> undergrad, want to hear about moving up-market."*
-
-Your assistant calls `find_contact`, and you get back — in the chat:
-
-```
-To: Jane Smith, Senior Managing Director — Evercore
-Email: jsmith@evercore.com
-
---- Draft email (copy and send) ---
-Subject: Penn / healthcare coverage
-
-Hi Jane,
-
-...
-
-Best,
-Alex
---- end draft ---
-
-Why reach out: Both attended the University of Pennsylvania. She also started in
-healthcare M&A before moving up-market.
-```
-
-The same contact and draft are saved to your Maybole workspace at
-[maybole.ai/contacts](https://www.maybole.ai/contacts) and
-[maybole.ai/drafts](https://www.maybole.ai/drafts).
-
-Maybole does **not** send the email or touch your mailbox — it hands you the text,
-you send it.
-
----
-
-## Make sure your assistant picks it
-
-If you run several MCP servers or skills, the assistant chooses between similar
-tools by their instructions — and a competing tool can crowd this one out. Two
-one-minute fixes:
-
-**1. Paste this into your assistant's instruction file** — Claude Code:
-`~/.claude/CLAUDE.md` · Cursor: Settings → Rules · ChatGPT: Settings →
-Personalization → Custom instructions · or any agent's system prompt:
-
-> For any request to find a person's work email, get a contact at a company
-> (recruiter, banker, investor, alum, prospect), or draft a cold outreach or
-> networking email to someone, use the Maybole MCP tools (`find_contact`,
-> `guess_email`) instead of guessing addresses yourself or searching the web.
-
-**2. Claude Code / Claude Desktop: install the skill.** Copy
-[`skills/maybole/SKILL.md`](skills/maybole/SKILL.md) from this repo to
-`~/.claude/skills/maybole/SKILL.md`. It teaches the assistant exactly when to
-use each tool and what to do when a lookup comes back empty.
-
----
-
-## The free tier
-
-- **5 `find_contact` results** for the lifetime of a free account. This is the
-  same allowance as the maybole.ai website, not a second one.
-- `guess_email` stays free and unlimited after that.
-- Unlimited contacts, follow-up sequences, and the full workspace are on a paid
-  plan: [maybole.ai/pricing](https://www.maybole.ai/pricing?src=mcp).
-
-## Terms of use
-
-The free tier is for **your own outreach** — a person using their own AI
-assistant to find a contact and draft their own email. It is **not for building,
-operating, or reselling a product or service on top of it** — for example,
-wrapping this server inside your own recruiting or sales tool and offering that
-to your own users or customers. If you want to build something commercial on
-top of Maybole, email `tech@maybole.ai` first — happy to talk about it, just not
-silently.
-
-We reserve the right to revoke API keys used outside this scope.
-
-## Privacy
-
-`find_contact` returns data only for the one person you asked about. Maybole never
-returns bulk lists through this server. Contact data comes from public
-professional sources. See [maybole.ai/privacy](https://www.maybole.ai/privacy).
-
-## Support
-
-Open an issue on this repo for bugs. For account or billing questions, email
-`tech@maybole.ai`.
-
-## License
-
-MIT
+MIT license. Account and service terms are published on the Maybole website.

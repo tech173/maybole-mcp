@@ -1,0 +1,10 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Maybole Mailbox",
+  "version": "0.1.0",
+  "identifier": "ai.maybole.mailbox",
+  "build": { "frontendDist": "../local-helper" },
+  "app": { "windows": [{ "title": "Maybole Mailbox", "width": 880, "height": 720 }], "security": { "csp": "default-src 'self'; connect-src http://127.0.0.1:*; img-src 'self' data:" } },
+  "bundle": { "active": true, "targets": ["dmg", "msi"], "createUpdaterArtifacts": true },
+  "plugins": { "updater": { "pubkey": "RELEASE_PUBLIC_KEY_REQUIRED", "endpoints": ["https://www.maybole.ai/downloads/mailbox/latest.json"] } }
+}
